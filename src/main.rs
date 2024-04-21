@@ -1,4 +1,8 @@
 mod utils;
+use utils::file::open_or_create_file;
+use utils::prime::sieve_of_eratosthenes;
+use utils::perfect_num::{is_mersenne_prime, is_perfect_number};
+
 use std::env;
 
 fn main() {
@@ -17,8 +21,8 @@ fn main() {
         }
     };
 
-    let primes = utils::prime::sieve_of_eratosthenes(max_number);
-    let mut file = utils::file::open_or_create_file("primes.txt");
+    let primes = sieve_of_eratosthenes(max_number);
+    let mut file = open_or_create_file("primes.txt");
 
     for (i, &prime) in primes.iter().enumerate() {
         if i > 0 {
@@ -26,11 +30,11 @@ fn main() {
         }
         write!(file, "{}", prime).expect("Failed to write to file");
 
-        if utils::perfect_num::is_mersenne_prime(prime) {
+        if is_mersenne_prime(prime) {
             println!("{} is a Mersenne prime", prime);
         }
 
-        if utils::perfect_num::is_perfect_number(prime) {
+        if is_perfect_number(prime) {
             println!("{} is a perfect number", prime);
         }
     }

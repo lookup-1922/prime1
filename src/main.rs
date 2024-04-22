@@ -10,7 +10,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     // コマンドライン引数用の変数の宣言
-    let mut command_type:String;
+    let mut command_type: String;
     let mut max_number: u32;
 
     // コマンドライン引数の数を確認して値を変数に格納
@@ -30,8 +30,14 @@ fn main() {
         std::process::exit(1);
     }
 
+    match command_type {
+        prime => prime_search(),
+        perfect_num => perfect_num_search(),
+        _ => println!("Usage: <command> <number>"),
+    }
+
     let primes = sieve_of_eratosthenes(max_number);
-    let mut file = open_or_create_file("primes.txt");
+    let mut file = open_or_create_file("prime1.txt");
 
     for (i, &prime) in primes.iter().enumerate() {
         if i > 0 {
@@ -49,7 +55,16 @@ fn main() {
     }
 
     println!(
-        "Prime numbers up to {} have been saved to primes.txt",
+        "Prime numbers up to {} have been saved to prime1.txt",
         max_number
     );
+    println!("Program has finished");
+}
+
+fn prime_search() {
+    println!("start prime_search");
+}
+
+fn perfect_num_search() {
+    println!("start perfect_num_search");
 }

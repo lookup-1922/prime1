@@ -10,15 +10,15 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     // コマンドライン引数用の変数の宣言
-    let mut command_type: String;
-    let mut max_number: u32;
+    let command_type: &str;
+    let mut point_number: u32 = 0;
 
     // コマンドライン引数の数を確認して値を変数に格納
     if args.len() == 1 {
-        command_type = args[1];
+        command_type = &args[1];
     } else if args.len() == 2 {
-        command_type = args[1];
-        max_number = match args[2].parse::<u32>() {
+        command_type = &args[1];
+        point_number = match args[2].parse::<u32>() {
             Ok(num) => num,
             Err(_) => {
                 eprintln!("Error: Invalid number provided");
@@ -31,40 +31,18 @@ fn main() {
     }
 
     match command_type {
-        prime => prime_search(),
-        perfect_num => perfect_num_search(),
+        "prime" => prime_search(point_number),
+        "perfect_num" => perfect_num_search(point_number),
         _ => println!("Usage: <command> <number>"),
     }
 
-    let primes = sieve_of_eratosthenes(max_number);
-    let mut file = open_or_create_file("prime1.txt");
-
-    for (i, &prime) in primes.iter().enumerate() {
-        if i > 0 {
-            write!(file, ", ").expect("Failed to write to file");
-        }
-        write!(file, "{}", prime).expect("Failed to write to file");
-
-        if is_mersenne_prime(prime) {
-            println!("{} is a Mersenne prime", prime);
-        }
-
-        if is_perfect_number(prime) {
-            println!("{} is a perfect number", prime);
-        }
-    }
-
-    println!(
-        "Prime numbers up to {} have been saved to prime1.txt",
-        max_number
-    );
     println!("Program has finished");
 }
 
-fn prime_search() {
+fn prime_search(point_number: u32) {
     println!("start prime_search");
 }
 
-fn perfect_num_search() {
+fn perfect_num_search(point_number: u32) {
     println!("start perfect_num_search");
 }

@@ -1,7 +1,6 @@
 mod utils;
 use utils::file::open_or_create_file;
-use utils::perfect_num::{is_mersenne_prime, is_perfect_number};
-use utils::prime::sieve_of_eratosthenes;
+use utils::prime::{is_mersenne_prime, is_perfect_number};
 
 use std::env;
 

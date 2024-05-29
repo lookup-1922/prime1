@@ -6,5 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+indicatif = "0.16"
 num-bigint = "0.4"
+num-primes = "0.3"
 num-traits = "0.2"
+dialoguer = "0.9"

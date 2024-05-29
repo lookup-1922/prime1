@@ -1,30 +1,62 @@
-pub fn is_mersenne_prime(p: u32) -> bool {
-    // メルセンヌ素数かどうかを判定する関数
-    return false;
+use num_bigint::{BigInt, BigUint, ToBigUint};
+use num_primes::Verification;
+use num_traits::{One, ToPrimitive, Zero};
+
+pub fn is_composite(number: &BigInt) -> bool {
+    !is_prime(number)
 }
 
-pub fn is_perfect_number(p: u32) -> bool {
-    // 完全数かどうかを判定する関数
-    return false;
+pub fn is_prime(number: &BigInt) -> bool {
+    let number: BigUint = match number.to_biguint() {
+        Some(n) => n,
+        None => return false,
+    };
+    Verification::is_prime(&number)
 }
 
-pub mod is_mersenne {
-    use num_bigint::{BigUint, ToBigUint};
-    use num_traits::Pow;
-
-    pub fn lucas_lehmer_test(p: u32) -> bool {
-        let mut s: BigUint = 4.to_biguint().unwrap();
-        let m: BigUint = 2.to_biguint().unwrap().pow(p) - 1.to_biguint().unwrap();
-
-        for _ in 2..p {
-            s = (s.pow(2) - 2.to_biguint().unwrap()) % m.clone();
-            if s == 0.to_biguint().unwrap() {
-                return true;
+pub fn mersenne_primes_checker(number: &BigInt) -> bool {
+    let one = BigInt::one();
+    if (number + &one & number) == BigInt::zero() {
+        let mut i = BigInt::one();
+        while &i * &i <= *number {
+            if number % &i == BigInt::zero() {
+                return false;
             }
+            i += 1;
         }
+        return true;
+    }
+    return false;
+}
+
+pub fn perfect_number_checker(number: &BigInt, divisor: &Vec<BigInt>) -> bool {
+    let sum_divisors: BigInt = divisor.iter().sum();
+    if number * 2 == sum_divisors {
+        return true;
+    } else {
         return false;
     }
+}
 
+pub fn mersenne_to_perfect(power: &BigInt) -> BigInt {
+    BigInt::from(2).pow(power.to_u64().unwrap() - 1)
+        * (BigInt::from(2).pow(power.to_u64().unwrap()) - 1)
+}
+
+pub fn mersenne_search() {
+    let mut power = BigInt::from(2);
+    while power < BigInt::from(1000) {
+        // 任意の範囲
+        if is_prime(&power)
+            && mersenne_primes_checker(&(BigInt::from(2).pow(power.to_u64().unwrap()) - 1))
+        {
+            println!("2^{} - 1 はメルセンヌ素数です。", power);
+        }
+        power += 1;
+    }
+}
+
+/*
     pub fn test_by_number(number: u128) -> bool {
         if is_prime::simple(number) {
             let mersenne_exponent: u32 = (number as f64).log2() as u32;
@@ -39,52 +71,4 @@ pub mod is_mersenne {
             return false;
         }
     }
-
-    pub mod is_prime {
-        pub fn simple(number: u128) -> bool {
-            if number <= 1 {
-                return false;
-            }
-            if number == 2 || number == 3 {
-                return true;
-            }
-            if number % 2 == 0 || number % 3 == 0 {
-                return false;
-            }
-
-            let mut i = 5;
-            while i * i <= number {
-                if number % i == 0 || number % (i + 2) == 0 {
-                    return false;
-                }
-                i += 6;
-            }
-
-            return true;
-        }
-    }
-}
-
-pub mod is_perfect_number {
-    pub fn is_pefect_number(number: u128) -> bool {
-        let divisors = listup_divisors(number);
-        let sum_divisors: u128 = divisors.iter().sum();
-        return sum_divisors == number * 2;
-    }
-
-    pub fn listup_divisors(number: u128) -> Vec<u128> {
-        let mut divisors: Vec<u128> = vec![];
-        let mut i = 1;
-        while i * i <= number {
-            if number % i == 0 {
-                divisors.push(i);
-                if i * i != number {
-                    divisors.push(number / i);
-                }
-            }
-            i += 1;
-        }
-        divisors.sort();
-        return divisors;
-    }
-}
+*/

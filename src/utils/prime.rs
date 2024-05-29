@@ -1,6 +1,7 @@
-use num_bigint::{BigInt, BigUint, ToBigUint};
+use num_bigint::{BigInt, BigUint};
 use num_primes::Verification;
-use num_traits::{One, ToPrimitive, Zero};
+use num_traits::{One, Zero, ToPrimitive};
+use std::convert::TryInto;
 
 pub fn is_composite(number: &BigInt) -> bool {
     !is_prime(number)
@@ -39,17 +40,14 @@ pub fn perfect_number_checker(number: &BigInt, divisor: &Vec<BigInt>) -> bool {
 }
 
 pub fn mersenne_to_perfect(power: &BigInt) -> BigInt {
-    BigInt::from(2).pow(power.to_u64().unwrap() - 1)
-        * (BigInt::from(2).pow(power.to_u64().unwrap()) - 1)
+    let power_u32: u32 = (power.to_u64().unwrap()).try_into().unwrap();
+    BigInt::from(2).pow(power_u32 - 1) * (BigInt::from(2).pow(power_u32) - 1)
 }
 
 pub fn mersenne_search() {
     let mut power = BigInt::from(2);
-    while power < BigInt::from(1000) {
-        // 任意の範囲
-        if is_prime(&power)
-            && mersenne_primes_checker(&(BigInt::from(2).pow(power.to_u64().unwrap()) - 1))
-        {
+    while power < BigInt::from(1000) { // 任意の範囲
+        if is_prime(&power) && mersenne_primes_checker(&(BigInt::from(2).pow(power.to_u64().unwrap().try_into().unwrap()) - 1)) {
             println!("2^{} - 1 はメルセンヌ素数です。", power);
         }
         power += 1;

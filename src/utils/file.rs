@@ -1,5 +1,6 @@
 use indicatif::{ProgressBar, ProgressStyle};
 use num_bigint::BigInt;
+use num_traits::{Zero, One, ToPrimitive};
 use std::fs::File;
 use std::io::{self, BufRead};
 
@@ -12,7 +13,6 @@ pub fn find_divisor(number: &BigInt) -> Vec<BigInt> {
     bar.set_style(
         ProgressStyle::default_bar()
             .template("{spinner:.green} {msg} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta})")
-            .expect("Failed to set template")
             .progress_chars("#>-")
     );
     bar.set_message("checking divisor");
@@ -41,9 +41,7 @@ pub fn file_convert(filename: &str) {
         let number: BigInt = line.trim().parse().unwrap();
         if number.is_even() {
             let power = number.log2() + 1;
-            if crate::utils::prime::is_prime(&BigInt::from(power))
-                && crate::utils::prime::mersenne_primes_checker(&number)
-            {
+            if crate::utils::prime::is_prime(&BigInt::from(power)) && crate::utils::prime::mersenne_primes_checker(&number) {
                 let perfect = crate::utils::prime::mersenne_to_perfect(&BigInt::from(power));
                 println!("完全数: {}", perfect);
             }

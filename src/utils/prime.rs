@@ -8,7 +8,6 @@ pub fn is_perfect_number(p: u32) -> bool {
     return false;
 }
 
-/*
 pub mod is_mersenne {
     use num_bigint::{BigUint, ToBigUint};
     use num_traits::Pow;
@@ -89,4 +88,3 @@ pub mod is_perfect_number {
         return divisors;
     }
 }
-*/

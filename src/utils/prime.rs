@@ -1,5 +1,4 @@
-use num_bigint::{BigInt, BigUint};
-use num_primes::Verification;
+use num_bigint::BigInt;
 use num_traits::{One, Zero, ToPrimitive};
 use std::convert::TryInto;
 
@@ -8,11 +7,18 @@ pub fn is_composite(number: &BigInt) -> bool {
 }
 
 pub fn is_prime(number: &BigInt) -> bool {
-    let number: BigUint = match number.to_biguint() {
-        Some(n) => n,
-        None => return false,
-    };
-    Verification::is_prime(&number)
+    if number <= &BigInt::one() {
+        return false;
+    }
+
+    let mut i = BigInt::from(2);
+    while &i * &i <= *number {
+        if number % &i == BigInt::zero() {
+            return false;
+        }
+        i += 1;
+    }
+    true
 }
 
 pub fn mersenne_primes_checker(number: &BigInt) -> bool {
@@ -27,16 +33,12 @@ pub fn mersenne_primes_checker(number: &BigInt) -> bool {
         }
         return true;
     }
-    return false;
+    false
 }
 
 pub fn perfect_number_checker(number: &BigInt, divisor: &Vec<BigInt>) -> bool {
     let sum_divisors: BigInt = divisor.iter().sum();
-    if number * 2 == sum_divisors {
-        return true;
-    } else {
-        return false;
-    }
+    number * 2 == sum_divisors
 }
 
 pub fn mersenne_to_perfect(power: &BigInt) -> BigInt {
@@ -53,6 +55,7 @@ pub fn mersenne_search() {
         power += 1;
     }
 }
+
 
 /*
     pub fn test_by_number(number: u128) -> bool {

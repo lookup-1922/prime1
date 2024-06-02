@@ -1,69 +1,98 @@
 mod utils;
 
-use dialoguer::{theme::ColorfulTheme, MultiSelect};
+use clap::Parser;
+use dialoguer::{FuzzySelect, Input, MultiSelect};
 use num_bigint::BigInt;
-use std::env;
-use std::io;
+
+///引数なし：自然数の入力後、動作をセレクト
+/// --mersenne-search：メルセンヌ素数の探索をする
+/// --to-perfect [file_name]：メルセンヌ素数のpをもとに完全数に変換する。
+#[derive(Parser)]
+#[command(name = "Prime1")]
+#[command(about = "自然数の解析を行うプログラム", long_about = None)]
+struct Args {
+    #[arg(short, long)]
+    mersenne_search: bool,
+
+    #[arg(short, long)]
+    to_perfect: bool,
+}
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let args = Args::parse();
 
-    if args.len() == 1 {
-        println!("任意の自然数を入力してください。");
-        let mut input = String::new();
-        io::stdin().read_line(&mut input).unwrap();
-        let number: BigInt = input.trim().parse().unwrap();
-
-        let options = &[
-            "約数",
-            "合成数判定",
-            "素数判定",
-            "メルセンヌ素数判定",
-            "完全数判定",
-        ];
-        let selections = MultiSelect::with_theme(&ColorfulTheme::default())
-            .with_prompt("何を実行しますか？")
-            .items(options)
-            .interact()
-            .unwrap();
-
-        if selections.contains(&0) {
-            let divisor = utils::file::find_divisor(&number);
-            println!("約数: {:?}", divisor);
-        }
-        if selections.contains(&1) {
-            if !utils::prime::is_composite(&number) {
-                println!("合成数ではありません。");
-            } else {
-                println!("合成数です。");
-            }
-        }
-        if selections.contains(&2) {
-            if utils::prime::is_prime(&number) {
-                println!("素数です。");
-            } else {
-                println!("素数ではありません。");
-            }
-        }
-        if selections.contains(&3) {
-            if utils::prime::mersenne_primes_checker(&number) {
-                println!("メルセンヌ素数です。");
-            } else {
-                println!("メルセンヌ素数ではありません。");
-            }
-        }
-        if selections.contains(&4) {
-            let divisor = utils::file::find_divisor(&number);
-            if utils::prime::perfect_number_checker(&number, &divisor) {
-                println!("完全数です。");
-            } else {
-                println!("完全数ではありません。");
-            }
-        }
-    } else if args.len() == 2 && args[1] == "--mersenne-search" {
+    if args.mersenne_search {
         utils::prime::mersenne_search();
-    } else if args.len() == 3 && args[1] == "--file-convert" {
-        let filename = &args[2];
-        utils::file::file_convert(filename);
+    } else if args.to_perfect {
+        let options = utils::file::find_txt_files(".");
+        if options.len() != 0 {
+            let filename = FuzzySelect::new()
+                .with_prompt("ファイルを選択してください")
+                .items(&options)
+                .interact()
+                .unwrap();
+
+            let filename = &options[filename];
+            utils::file::file_convert(filename);
+        } else {
+            println!("ファイルが見つかりませんでした。");
+        }
+    } else {
+        no_arguments();
+    }
+}
+
+fn no_arguments() {
+    let input = Input::<String>::new()
+        .with_prompt("自然数を入力してください")
+        .interact()
+        .unwrap();
+    let number: BigInt = input.trim().parse().unwrap();
+
+    let options = &[
+        "約数",
+        "合成数判定",
+        "素数判定",
+        "メルセンヌ素数判定",
+        "完全数判定",
+    ];
+    let selections = MultiSelect::new()
+        .with_prompt("何を実行しますか？")
+        .items(options)
+        .interact()
+        .unwrap();
+
+    if selections.contains(&0) {
+        let divisor = utils::prime::find_divisor(&number);
+        println!("約数: {:?}", divisor);
+    }
+    if selections.contains(&1) {
+        if !utils::prime::is_composite(&number) {
+            println!("合成数ではありません。");
+        } else {
+            println!("合成数です。");
+        }
+    }
+    if selections.contains(&2) {
+        if utils::prime::is_prime(&number) {
+            println!("素数です。");
+        } else {
+            println!("素数ではありません。");
+        }
+    }
+    if selections.contains(&3) {
+        if utils::prime::mersenne_primes_checker(&number) {
+            println!("メルセンヌ素数です。");
+        } else {
+            println!("メルセンヌ素数ではありません。");
+        }
+    }
+    if selections.contains(&4) {
+        let divisor = utils::prime::find_divisor(&number);
+        if utils::prime::perfect_number_checker(&number, &divisor) {
+            println!("完全数です。");
+        } else {
+            println!("完全数ではありません。");
+        }
     }
 }

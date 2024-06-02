@@ -1,6 +1,6 @@
-use num_bigint::BigInt;
 use indicatif::{ProgressBar, ProgressStyle};
-use num_traits::{One, Zero, ToPrimitive};
+use num_bigint::BigInt;
+use num_traits::{One, ToPrimitive, Zero};
 use std::convert::TryInto;
 
 pub fn is_composite(number: &BigInt) -> bool {
@@ -79,28 +79,39 @@ pub fn mersenne_to_perfect(power: &BigInt) -> BigInt {
 
 pub fn mersenne_search() {
     let mut power = BigInt::from(2);
-    while power < BigInt::from(1000) { // 任意の範囲
-        if is_prime(&power) && mersenne_primes_checker(&(BigInt::from(2).pow(power.to_u64().unwrap().try_into().unwrap()) - 1)) {
+    while power < BigInt::from(1000) {
+        // 任意の範囲
+        if is_prime(&power)
+            && mersenne_primes_checker(
+                &(BigInt::from(2).pow(power.to_u64().unwrap().try_into().unwrap()) - 1),
+            )
+        {
             println!("2^{} - 1 はメルセンヌ素数です。", power);
         }
         power += 1;
     }
 }
 
+// 2024年での最大のメルセンヌ素数はM82589933
+// u64の最大値は18446744073709551615
+// テストをパスしていない。
+pub fn lucas_lehmer_test(p: usize) -> bool {
+    let m = BigInt::from(1) << p;
+    let mut s = BigInt::from(4);
 
-/*
-    pub fn test_by_number(number: u128) -> bool {
-        if is_prime::simple(number) {
-            let mersenne_exponent: u32 = (number as f64).log2() as u32;
-            let mersenne_number: u128 = 2u128.pow(mersenne_exponent) - 1;
+    let pb = ProgressBar::new(p as u64);
+    pb.set_style(
+        ProgressStyle::default_bar()
+            .template("[{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta})")
+            .progress_chars("##-"),
+    );
 
-            if mersenne_number == number {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+    for _n in 2..=p {
+        let s_squared = &s * &s;
+        s = (s_squared - 2) % &m;
+        pb.inc(1);
     }
-*/
+
+    pb.finish_and_clear();
+    s == BigInt::zero()
+}

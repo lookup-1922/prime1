@@ -6,7 +6,7 @@ use num_bigint::BigInt;
 
 ///引数なし：自然数の入力後、動作をセレクト
 /// --mersenne-search：メルセンヌ素数の探索をする
-/// --to-perfect [file_name]：メルセンヌ素数のpをもとに完全数に変換する。
+/// --to-perfect：メルセンヌ素数のpをもとに完全数に変換する。
 #[derive(Parser)]
 #[command(name = "Prime1")]
 #[command(about = "自然数の解析を行うプログラム", long_about = None)]
@@ -55,6 +55,7 @@ fn no_arguments() {
         "素数判定",
         "メルセンヌ素数判定",
         "完全数判定",
+        "リュカ–レーマー・テスト",
     ];
     let selections = MultiSelect::new()
         .with_prompt("何を実行しますか？")
@@ -93,6 +94,14 @@ fn no_arguments() {
             println!("完全数です。");
         } else {
             println!("完全数ではありません。");
+        }
+    }
+    if selections.contains(&5) {
+        let num: usize = input.trim().parse().unwrap();
+        if utils::prime::lucas_lehmer_test(num) {
+            println!("M{} はメルセンヌ素数です。", num);
+        } else {
+            println!("M{} はメルセンヌ素数ではありません。", num);
         }
     }
 }

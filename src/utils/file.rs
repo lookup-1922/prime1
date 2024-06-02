@@ -1,38 +1,8 @@
-use indicatif::{ProgressBar, ProgressStyle};
 use num_bigint::BigInt;
-use num_traits::{Zero, One, ToPrimitive};
+use num_traits::{Zero, One};
 use std::fs::File;
 use std::io::{self, BufRead};
-
-pub fn find_divisor(number: &BigInt) -> Vec<BigInt> {
-    let mut result = Vec::new();
-    let mut i = BigInt::one();
-
-    let amount = number.sqrt();
-    let bar = ProgressBar::new(amount.to_u64().unwrap());
-    bar.set_style(
-        ProgressStyle::default_bar()
-            .template("{spinner:.green} {msg} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta})")
-            .progress_chars("#>-")
-    );
-    bar.set_message("checking divisor");
-
-    while &i * &i <= *number {
-        if number % &i == BigInt::zero() {
-            result.push(i.clone());
-            if &i * &i != *number {
-                result.push(number / &i);
-            };
-        }
-        i += 1;
-        bar.set_position(i.to_u64().unwrap());
-    }
-
-    bar.finish_with_message("Done!");
-
-    result.sort();
-    return result;
-}
+use walkdir::WalkDir;
 
 pub fn file_convert(filename: &str) {
     let file = File::open(filename).unwrap();
@@ -47,6 +17,21 @@ pub fn file_convert(filename: &str) {
             }
         }
     }
+}
+
+pub fn find_txt_files(dir: &str) -> Vec<String> {
+    let mut options = Vec::new();
+    for entry in WalkDir::new(dir).into_iter().filter_map(|e| e.ok()) {
+        let path = entry.path();
+        if path.is_file() {
+            if let Some(extension) = path.extension() {
+                if extension == "txt" {
+                    options.push(path.to_string_lossy().into_owned());
+                }
+            }
+        }
+    }
+    options
 }
 
 trait BigIntExt {

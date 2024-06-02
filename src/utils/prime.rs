@@ -1,4 +1,5 @@
 use num_bigint::BigInt;
+use indicatif::{ProgressBar, ProgressStyle};
 use num_traits::{One, Zero, ToPrimitive};
 use std::convert::TryInto;
 
@@ -19,6 +20,36 @@ pub fn is_prime(number: &BigInt) -> bool {
         i += 1;
     }
     true
+}
+
+pub fn find_divisor(number: &BigInt) -> Vec<BigInt> {
+    let mut result = Vec::new();
+    let mut i = BigInt::one();
+
+    let amount = number.sqrt();
+    let bar = ProgressBar::new(amount.to_u64().unwrap());
+    bar.set_style(
+        ProgressStyle::default_bar()
+            .template("{spinner:.green} {msg} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta})")
+            .progress_chars("#>-")
+    );
+    bar.set_message("checking divisor");
+
+    while &i * &i <= *number {
+        if number % &i == BigInt::zero() {
+            result.push(i.clone());
+            if &i * &i != *number {
+                result.push(number / &i);
+            };
+        }
+        i += 1;
+        bar.set_position(i.to_u64().unwrap());
+    }
+
+    bar.finish_with_message("Done!");
+
+    result.sort();
+    return result;
 }
 
 pub fn mersenne_primes_checker(number: &BigInt) -> bool {

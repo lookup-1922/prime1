@@ -94,7 +94,7 @@ pub fn mersenne_search() {
 
 // 2024年での最大のメルセンヌ素数はM82589933
 // u64の最大値は18446744073709551615
-// テストをパスしていない。
+// プログレスバーが動作しない
 pub fn lucas_lehmer_test(p: usize) -> bool {
     let m = (BigInt::one() << p) - BigInt::one();
     let mut s: BigInt = "4".parse().unwrap();

@@ -46,7 +46,7 @@ pub fn find_divisor(number: &BigInt) -> Vec<BigInt> {
         bar.set_position(i.to_u64().unwrap());
     }
 
-    bar.finish_with_message("Done!");
+    bar.finish_and_clear();
 
     result.sort();
     return result;
@@ -94,7 +94,6 @@ pub fn mersenne_search() {
 
 // 2024年での最大のメルセンヌ素数はM82589933
 // u64の最大値は18446744073709551615
-// プログレスバーが動作しない
 pub fn lucas_lehmer_test(p: usize) -> bool {
     let m = (BigInt::one() << p) - BigInt::one();
     let mut s: BigInt = "4".parse().unwrap();

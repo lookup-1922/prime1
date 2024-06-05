@@ -96,8 +96,8 @@ pub fn mersenne_search() {
 // u64の最大値は18446744073709551615
 // テストをパスしていない。
 pub fn lucas_lehmer_test(p: usize) -> bool {
-    let m = BigInt::from(1) << p;
-    let mut s = BigInt::from(4);
+    let m = (BigInt::one() << p) - BigInt::one();
+    let mut s: BigInt = "4".parse().unwrap();
 
     let pb = ProgressBar::new(p as u64);
     pb.set_style(
@@ -107,11 +107,13 @@ pub fn lucas_lehmer_test(p: usize) -> bool {
     );
 
     for _n in 2..=p {
-        let s_squared = &s * &s;
-        s = (s_squared - 2) % &m;
+        s = (&s * &s - 2) % &m;
+        if s == BigInt::zero() {
+            return true;
+        }
         pb.inc(1);
     }
 
     pb.finish_and_clear();
-    s == BigInt::zero()
+    return s == BigInt::zero();
 }

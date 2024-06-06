@@ -7,6 +7,12 @@ pub fn is_composite(number: &BigInt) -> bool {
     !is_prime(number)
 }
 
+// 合成数のときfalse
+// 素数かもしれないときtrue
+pub fn miller_rabin(number: u64) -> bool {
+    return true;
+}
+
 pub fn is_prime(number: &BigInt) -> bool {
     if number <= &BigInt::one() {
         return false;

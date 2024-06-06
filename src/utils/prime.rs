@@ -101,9 +101,10 @@ pub fn lucas_lehmer_test(p: usize) -> bool {
     let pb = ProgressBar::new(p as u64);
     pb.set_style(
         ProgressStyle::default_bar()
-            .template("[{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta})")
+            .template("{spinner:.green} {msg} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta})")
             .progress_chars("##-"),
     );
+    pb.set_message("lucas_lehmer_test");
 
     for _n in 2..=p {
         s = (&s * &s - 2) % &m;

@@ -51,7 +51,6 @@ fn no_arguments() {
 
     let options = &[
         "約数",
-        "合成数判定",
         "素数判定",
         "メルセンヌ素数判定",
         "完全数判定",
@@ -69,27 +68,24 @@ fn no_arguments() {
     }
     if selections.contains(&1) {
         if utils::prime::miller_rabin(&number, 20) {
-            println!("{} is probably prime.", number);
+            println!("{} はたぶん素数です。", number);
+            if utils::prime::is_prime(&number) {
+                println!("{} は素数です。", number);
+            } else {
+                println!("{} は素数ではありません。", number);
+            }
         } else {
-            println!("{} is composite.", number);
+            println!("{} は合成数です。", number);
         }
-    
     }
     if selections.contains(&2) {
-        if utils::prime::is_prime(&number) {
-            println!("素数です。");
-        } else {
-            println!("素数ではありません。");
-        }
-    }
-    if selections.contains(&3) {
         if utils::prime::mersenne_primes_checker(&number) {
             println!("メルセンヌ素数です。");
         } else {
             println!("メルセンヌ素数ではありません。");
         }
     }
-    if selections.contains(&4) {
+    if selections.contains(&3) {
         let divisor = utils::prime::find_divisor(&number);
         if utils::prime::perfect_number_checker(&number, &divisor) {
             println!("完全数です。");
@@ -97,7 +93,7 @@ fn no_arguments() {
             println!("完全数ではありません。");
         }
     }
-    if selections.contains(&5) {
+    if selections.contains(&4) {
         let num: usize = input.trim().parse().unwrap();
         if utils::prime::lucas_lehmer_test(num) {
             println!("M{} はメルセンヌ素数です。", num);

@@ -56,13 +56,13 @@ pub fn miller_rabin(n: &BigInt, k: usize) -> bool {
         }
 
         if is_composite {
-            pb.finish_with_message("Composite");
+            pb.finish_and_clear();
             return false;
         }
         pb.inc(1);
     }
 
-    pb.finish_with_message("Probably Prime");
+    pb.finish_and_clear();
     true
 }
 

@@ -6,10 +6,11 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-num-bigint = "0.4"
+num-bigint = { version = "0.4", features = ["rand"] }
 num-traits = "0.2"
 indicatif = "0.16"
 dialoguer = { version = "0.10", features = ["fuzzy-select"] }
 clap = { version = "4.5", features = ["derive"] }
 walkdir = "2.3"
-
+rand = "0.8"
+num-integer = "0.1"

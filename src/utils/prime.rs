@@ -1,16 +1,87 @@
 use indicatif::{ProgressBar, ProgressStyle};
 use num_bigint::BigInt;
+use num_bigint::RandBigInt;
 use num_traits::{One, ToPrimitive, Zero};
 use std::convert::TryInto;
-
-pub fn is_composite(number: &BigInt) -> bool {
-    !is_prime(number)
-}
+use num_integer::Integer;
+use rand::thread_rng;
 
 // 合成数のときfalse
 // 素数かもしれないときtrue
-pub fn miller_rabin(number: u64) -> bool {
-    return true;
+pub fn miller_rabin(n: &BigInt, k: usize) -> bool {
+    // If n is 2, it's prime
+    if *n == BigInt::from(2) {
+        return true;
+    }
+
+    // If n is less than 2 or even, it's composite
+    if *n < BigInt::from(2) || n.is_even() {
+        return false;
+    }
+
+    // Write n-1 as 2^s * d
+    let one = BigInt::one();
+    let two = BigInt::from(2);
+    let mut d = n - &one;
+    let mut s = 0;
+
+    while &d % &two == BigInt::zero() {
+        d /= 2;
+        s += 1;
+    }
+
+    let mut rng = thread_rng();
+    let pb = ProgressBar::new(k as u64);
+    pb.set_style(
+        ProgressStyle::default_bar()
+            .template("[{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta})")
+            .progress_chars("##-"),
+    );
+
+    for _ in 0..k {
+        let a = rng.gen_bigint_range(&two, &(n - &one));
+        let mut x = mod_exp(&a, &d, n);
+
+        if x == one || x == n - &one {
+            pb.inc(1);
+            continue;
+        }
+
+        let mut is_composite = true;
+        for _ in 0..s - 1 {
+            x = mod_exp(&x, &two, n);
+            if x == n - &one {
+                is_composite = false;
+                break;
+            }
+        }
+
+        if is_composite {
+            pb.finish_with_message("Composite");
+            return false;
+        }
+        pb.inc(1);
+    }
+
+    pb.finish_with_message("Probably Prime");
+    true
+}
+
+/// base^exp % modulus を計算する関数
+fn mod_exp(base: &BigInt, exp: &BigInt, modulus: &BigInt) -> BigInt {
+    let mut base = base % modulus;
+    let mut exp = exp.clone();
+    let mut result = BigInt::one();
+
+    while exp > BigInt::zero() {
+        if &exp % 2 == BigInt::one() {
+            result = (&result * &base) % modulus;
+        }
+        exp >>= 1;
+        base = (&base * &base) % modulus;
+    }
+
+    result
 }
 
 pub fn is_prime(number: &BigInt) -> bool {

@@ -68,11 +68,12 @@ fn no_arguments() {
         println!("約数: {:?}", divisor);
     }
     if selections.contains(&1) {
-        if !utils::prime::is_composite(&number) {
-            println!("合成数ではありません。");
+        if utils::prime::miller_rabin(&number, 20) {
+            println!("{} is probably prime.", number);
         } else {
-            println!("合成数です。");
+            println!("{} is composite.", number);
         }
+    
     }
     if selections.contains(&2) {
         if utils::prime::is_prime(&number) {

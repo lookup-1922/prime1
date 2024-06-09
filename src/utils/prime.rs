@@ -1,10 +1,9 @@
 use indicatif::{ProgressBar, ProgressStyle};
-use num_bigint::BigInt;
-use num_bigint::RandBigInt;
+use num_bigint::{BigInt, RandBigInt};
 use num_traits::{One, ToPrimitive, Zero};
-use std::convert::TryInto;
 use num_integer::Integer;
 use rand::thread_rng;
+use std::convert::TryInto;
 
 // 合成数のときfalse
 // 素数かもしれないときtrue
@@ -67,7 +66,7 @@ pub fn miller_rabin(n: &BigInt, k: usize) -> bool {
     true
 }
 
-/// base^exp % modulus を計算する関数
+// base^exp % modulus を計算する関数
 fn mod_exp(base: &BigInt, exp: &BigInt, modulus: &BigInt) -> BigInt {
     let mut base = base % modulus;
     let mut exp = exp.clone();

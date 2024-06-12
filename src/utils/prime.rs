@@ -89,13 +89,25 @@ pub fn is_prime(number: &BigInt) -> bool {
     }
 
     let mut i = BigInt::from(2);
+
+    let amount = number.sqrt();
+    let pb = ProgressBar::new(amount.to_u64().unwrap());
+    pb.set_style(
+        ProgressStyle::default_bar()
+            .template("{spinner:.green} {msg} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta})")
+            .progress_chars("#>-")
+    );
+    pb.set_message("checking");
+
     while &i * &i <= *number {
         if number % &i == BigInt::zero() {
             return false;
         }
         i += 1;
+        pb.set_position(i.to_u64().unwrap());
     }
-    true
+    pb.finish_and_clear();
+    return true;
 }
 
 pub fn find_divisor(number: &BigInt) -> Vec<BigInt> {

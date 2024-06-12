@@ -1,8 +1,36 @@
+use dialoguer::FuzzySelect;
 use num_bigint::BigInt;
-use num_traits::{Zero, One};
+use num_traits::{One, Zero};
 use std::fs::File;
 use std::io::{self, BufRead};
 use walkdir::WalkDir;
+
+pub fn select_file(dir: &str, file_extension: &str) -> str{
+    let mut options = Vec::new();
+    for entry in WalkDir::new(dir).into_iter().filter_map(|e| e.ok()) {
+        let path = entry.path();
+        if path.is_file() {
+            if let Some(extension) = path.extension() {
+                if extension == file_extension {
+                    options.push(path.to_string_lossy().into_owned());
+                }
+            }
+        }
+    }
+
+    if options.len() != 0 {
+        let filename = FuzzySelect::new()
+            .with_prompt("ファイルを選択してください")
+            .items(&options)
+            .interact()
+            .unwrap();
+
+        let filename = &options[filename];
+        return filename;
+    } else {
+        return "123";
+    }
+}
 
 pub fn file_convert(filename: &str) {
     let file = File::open(filename).unwrap();
@@ -11,7 +39,9 @@ pub fn file_convert(filename: &str) {
         let number: BigInt = line.trim().parse().unwrap();
         if number.is_even() {
             let power = number.log2() + 1;
-            if crate::utils::prime::is_prime(&BigInt::from(power)) && crate::utils::prime::mersenne_primes_checker(&number) {
+            if crate::utils::prime::is_prime(&BigInt::from(power))
+                && crate::utils::prime::mersenne_primes_checker(&number)
+            {
                 let perfect = crate::utils::prime::mersenne_to_perfect(&BigInt::from(power));
                 println!("完全数: {}", perfect);
             }

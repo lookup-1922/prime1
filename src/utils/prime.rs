@@ -30,8 +30,8 @@ pub fn miller_rabin(n: &BigInt, k: usize) -> bool {
     }
 
     let mut rng = thread_rng();
-    let pb = ProgressBar::new(k as u64);
-    pb.set_style(
+    let bar = ProgressBar::new(k as u64);
+    bar.set_style(
         ProgressStyle::default_bar()
             .template("[{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta})")
             .progress_chars("##-"),
@@ -42,7 +42,7 @@ pub fn miller_rabin(n: &BigInt, k: usize) -> bool {
         let mut x = mod_exp(&a, &d, n);
 
         if x == one || x == n - &one {
-            pb.inc(1);
+            bar.inc(1);
             continue;
         }
 
@@ -56,13 +56,13 @@ pub fn miller_rabin(n: &BigInt, k: usize) -> bool {
         }
 
         if is_composite {
-            pb.finish_and_clear();
+            bar.finish_and_clear();
             return false;
         }
-        pb.inc(1);
+        bar.inc(1);
     }
 
-    pb.finish_and_clear();
+    bar.finish_and_clear();
     true
 }
 
@@ -91,22 +91,22 @@ pub fn is_prime(number: &BigInt) -> bool {
     let mut i = BigInt::from(2);
 
     let amount = number.sqrt();
-    let pb = ProgressBar::new(amount.to_u64().unwrap());
-    pb.set_style(
+    let bar = ProgressBar::new(amount.to_u64().unwrap());
+    bar.set_style(
         ProgressStyle::default_bar()
             .template("{spinner:.green} {msg} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta})")
             .progress_chars("#>-")
     );
-    pb.set_message("checking");
+    bar.set_message("checking");
 
     while &i * &i <= *number {
         if number % &i == BigInt::zero() {
             return false;
         }
         i += 1;
-        pb.set_position(i.to_u64().unwrap());
+        bar.set_position(i.to_u64().unwrap());
     }
-    pb.finish_and_clear();
+    bar.finish_and_clear();
     return true;
 }
 
@@ -186,22 +186,22 @@ pub fn lucas_lehmer_test(p: usize) -> bool {
     let m = (BigInt::one() << p) - BigInt::one();
     let mut s: BigInt = "4".parse().unwrap();
 
-    let pb = ProgressBar::new(p as u64);
-    pb.set_style(
+    let bar = ProgressBar::new(p as u64);
+    bar.set_style(
         ProgressStyle::default_bar()
             .template("{spinner:.green} {msg} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta})")
             .progress_chars("##-"),
     );
-    pb.set_message("lucas_lehmer_test");
+    bar.set_message("lucas_lehmer_test");
 
     for _n in 2..=p {
         s = (&s * &s - 2) % &m;
         if s == BigInt::zero() {
             return true;
         }
-        pb.inc(1);
+        bar.inc(1);
     }
 
-    pb.finish_and_clear();
+    bar.finish_and_clear();
     return s == BigInt::zero();
 }

@@ -5,7 +5,7 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use walkdir::WalkDir;
 
-pub fn select_file(dir: &str, file_extension: &str) -> str{
+pub fn select_file(dir: &str, file_extension: &str) -> String {
     let mut options = Vec::new();
     for entry in WalkDir::new(dir).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path();
@@ -18,17 +18,16 @@ pub fn select_file(dir: &str, file_extension: &str) -> str{
         }
     }
 
-    if options.len() != 0 {
+    if !options.is_empty() {
         let filename = FuzzySelect::new()
             .with_prompt("ファイルを選択してください")
             .items(&options)
             .interact()
             .unwrap();
 
-        let filename = &options[filename];
-        return filename;
+        options[filename].clone()
     } else {
-        return "123";
+        "No file found".to_string()
     }
 }
 
